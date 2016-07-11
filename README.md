@@ -72,7 +72,21 @@ Note that it's not possible to register an App if there is already one with the 
 
 Also, it's not possible (of course) to run an App in Cyverse interactively. To run a Docker container and give it multiple commands we need the following synthax:  
 ```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
-`/bin/bash` is not strictly necessary, but depending on the base image bash may not be the default shell: adding it to command line would remove this problem.
+`/bin/bash` is not strictly necessary, but depending on the base image bash may not be the default shell: adding it to command line would remove this problem.  
+The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example).  
+The HTCondorSubmit.htc file will be in the following form:
+```
+universe                = docker
+docker_image            = <image_name>
+executable              = <command>
+should_transfer_files   = YES
+arguments               = <arguments_for_executable>
+transfer_output_files   = <files/folder to transfer>
+```  
+`transfer_output_files` is not needed if the output are in the working directory
+If transfering executables, make sure to restore the right permissions is the script (e.g `chmod u+x <file_name>`).
+
+A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.
 
 #####Additional notes on the JSON file
 
