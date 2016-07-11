@@ -25,8 +25,8 @@ If needed the following instructions may be found:
 
 ###Run a Container
 
-If running a container locally we often want to run it in interactive mode:
-```docker run -ti <image_name>```
+If running a container locally we often want to run it in interactive mode:  
+```docker run -ti <image_name>```   
 If the interactive mode is not needed don't use the `-i` option.  
 In case the image is not available locally, Docker will try to download it from <a href=https://hub.docker.com/>DockerHub</a>.
 
