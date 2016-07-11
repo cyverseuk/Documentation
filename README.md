@@ -50,7 +50,7 @@ For CyverseUk images when there is a known change in the image, a new build with
 ######_useful commands and tricks_
 
 See all existing containers:  
-```docker ps -a```
+```docker ps -a```   
 Remove orpahned volumes from Docker:  
 ```sudo docker volume ls -f dangling=true | awk '{print $2}' | tail -n +2 | xargs sudo docker volume rm```  
 Remove all containers:  
