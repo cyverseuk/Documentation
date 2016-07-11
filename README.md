@@ -42,7 +42,7 @@ To make an image publicly available this needs to be uploaded in DockerHub. You 
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
 For CyverseUK Docker images we are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
 Another useful feature of the automated build is publicing displayed the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it.
-Each image can be provided at build time with a tag (deafult one is `latest`). To do so type `docker build -t image_name:tag path/to/Dockerfile`.  
+Each image can be provided at build time with a tag (deafult one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
 For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions.
 
