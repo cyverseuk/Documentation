@@ -18,13 +18,13 @@ The `RUN` instruction execute the following commands installing the wanted softw
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
 If needed the following instructions may be found:
-`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly permformed in a second time.   
+`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly permformed in a second time).   
 `ENV` set environmental variables. Note that it supports a few standard bash modifiers as the following:  
 ```bash
 ${varibale:-word}
 ${variable:+word}
 ```  
-`MANTAINER` reports author of the image.  
+`MANTAINER` is the author of the image.  
 `ENTRYPOINT` may provide a default command to run when starting a new container making the docker image an executable.
 
 ###Run a Container
@@ -34,24 +34,26 @@ If running a container locally we often want to run it in interactive mode:
 If the interactive mode is not needed don't use the `-i` option.  
 In case the image is not available locally, Docker will try to download it from <a href=https://hub.docker.com/>DockerHub</a>.
 
-To use data available on the local machine we may need to use a volume. The `-v <source_dir>:<image_dir>` option given by command line will mount `source_dir` in the host to `image_dir` in the docker container. Any change will affect the host directory too.  
+To use data available on our local machine we may need to use a volume. The `-v <source_dir>:<image_dir>` option given by command line will mount `source_dir` in the host to `image_dir` in the docker container. Any change will affect the host directory too.  
 It is possible to stop and keep using the same container in a second time as:  
-```docker start <container_name>
-docker attach <container_name>```
+```
+docker start <container_name>
+docker attach <container_name>
+```
 
 ###DockerHub and Automated Build
 
-To make an image publicly available this needs to be uploaded in DockerHub. You will have to create an account and follow the official documentation. To summarize use the following command:  
+To make an image publicly available this needs to be uploaded in DockerHub. You have to create an account and follow the official documentation. To summarize use the following command:  
 ```docker tag <image_ID> <DockerHub_username/image_name[:tag]>```  
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
-For CyverseUK Docker images we are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated. The organization name is <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a>.  
-Another useful feature of the automated build is publicing displayed the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
+CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
+Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
 Each image can be provided at build time with a tag (deafult one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
-For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!**
+For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!** (also note that any change in the linked GitHub repository will trigger a new built, not just a  change in the DockerFile)
 
 ###More on Docker
-######_useful commands and tricks_
+#####_useful commands and tricks_
 
 See all existing containers:  
 ```docker ps -a```   
@@ -59,7 +61,7 @@ Remove orpahned volumes from Docker:
 ```sudo docker volume ls -f dangling=true | awk '{print $2}' | tail -n +2 | xargs sudo docker volume rm```  
 Remove all containers:  
 ```docker ps -a | awk '{print $1}' | tail -n +2 | xargs docker rm```  
-To avoid the accumulation of containers is also possible to run docker with the `--rm` option, that remove the container when the execution ends.  
+To avoid the accumulation of containers is also possible to run docker with the `--rm` option, that remove the container after the execution.  
 Remove dangling images (i.e. untagged): (to avoid errors due to images being used by containers, remove the containers first)  
 ```docker images -qf dangling=true | xargs docker rmi```   
 Remove dangling images AND the first container that is using them, if any: (may need to be run more than once)  
@@ -69,18 +71,19 @@ See the number of layers:
 See the image size:  
 ```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```
 
-For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with dieffrent functionalities. Badges were available to clearly displayed the size and the number of layers of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limit factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.
+For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.
 
 <hr>
 
 ###Registering an App
 
 To write and register an App I suggest to read <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
-Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one, or change the version number.  
+Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
 
-Also, it's not possible (of course) to run an App in Cyverse interactively. To run a Docker container and give it multiple commands we need the following synthax:  
+Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following synthax:  
 ```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
-`/bin/bash` is not strictly necessary, but depending on the base image bash may not be the default shell: adding it to command line would remove this problem.  
+`/bin/bash` is not strictly necessary, but, depending on the base image, bash may not be the default shell: adding it to command line takes care of this problem.  
+
 The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transfered back to the DE.  
 The HTCondorSubmit.htc file will be in the following form:
 ```
@@ -92,21 +95,21 @@ arguments               = <arguments_for_executable>
 transfer_output_files   = <files/folder to transfer separated by commas>
 ```  
 `transfer_output_files` is not needed if the output are in the working directory
-If transfering executables, make sure to restore the right permissions is the script (e.g `chmod u+x <file_name>`).
+If transfering executables, make sure to restore the right permissions in the script (e.g `chmod u+x <file_name>`).
 
 A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.  
 
 The App, after being made public with  
 ```apps-pems-update -v -u <username> -p ALL <app_name>-<version>```  
-can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically created based on the submitted JSON file.
+can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically generated based on the submitted JSON file.
 
 #####Additional notes on the JSON file
 
 Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
-In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to categorized the App.  
-If `details.showArgument` (boolean) is true it will pass `details.argument` before the `value` (e.g. if we want to pass to command line `--kmer 31`). Note that argument is prepended without spaces!!  
-`value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`.  
-We usually don't want the user to work in a folder that is not the working directory, so if the program run by the App has a `--output_directory` option (or similar) we may want to add a validator to be sure that the string doesn't start with /, or just hide it and give a default name (e.g. `ouput`).
+In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to properly categorize the App.  
+If `details.showArgument` (boolean) is set to `true`, it will pass `details.argument` before the value (e.g. if we want to pass to command line `--kmer 31`). Note that the argument is prepended without spaces (so usually we want to add one in the string)!!  
+`value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`. The same field also allow to accept just even/odd numbers, set a maximum value, etc.  
+We usually don't want the user to work in a folder that is not the set working directory, so if the program run by the App has a `--output_directory` option (or similar) we may want to add a validator to be sure that the string doesn't start with '/', or just hide it and give a default name (e.g. `ouput`).
 
 IMPORTANT:  
 ```json
