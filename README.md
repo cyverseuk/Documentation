@@ -10,7 +10,7 @@ App for CyverseUK are dockerized, allowing the use of a standard environment and
 To create a Docker Image you will need to download and install <a href=https://www.docker.com/products/overview>Docker</a> for your distribution.
 The suggestion is to follow the tutorial available on the website to get started.
 
-For CyverseUK Docker images we will start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image. For CyverseUK images the convention is to specify the tag of the base image too, to provide the user with a completly standard container.  
+For CyverseUK Docker images we will start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image. For CyverseUK images the convention is to specify the tag of the base image too, to provide the user with a completely standard container.  
 The instruction to build the image are written in a DockerFile.  
 The `LABEL` field provides the image metadata, in CyverseUK software/package`.version`.  
 The `USER` will be `root` by default for CyverseUK Docker images.  
@@ -18,10 +18,10 @@ The `RUN` instruction execute the following commands installing the wanted softw
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
 If needed the following instructions may be found:
-`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly permformed in a second time).   
+`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly performed in a second time).   
 `ENV` set environmental variables. Note that it supports a few standard bash modifiers as the following:  
 ```bash
-${varibale:-word}
+${variable:-word}
 ${variable:+word}
 ```  
 `MANTAINER` is the author of the image.  
@@ -48,7 +48,7 @@ To make an image publicly available this needs to be uploaded in DockerHub. You 
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
 CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
 Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
-Each image can be provided at build time with a tag (deafult one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
+Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
 For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!** (also note that any change in the linked GitHub repository will trigger a new built, not just a  change in the DockerFile)
 
@@ -57,7 +57,7 @@ For CyverseUk images when there is a known change in the image, a new build with
 
 See all existing containers:  
 ```docker ps -a```   
-Remove orpahned volumes from Docker:  
+Remove orphaned volumes from Docker:  
 ```sudo docker volume ls -f dangling=true | awk '{print $2}' | tail -n +2 | xargs sudo docker volume rm```  
 Remove all containers:  
 ```docker ps -a | awk '{print $1}' | tail -n +2 | xargs docker rm```  
@@ -77,14 +77,14 @@ For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> 
 
 ###Registering an App
 
-To write and register an App I suggest to read <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
+To write and register an App I suggest reading <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
 
-Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following synthax:  
+Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following syntax:  
 ```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
 `/bin/bash` is not strictly necessary, but, depending on the base image, bash may not be the default shell: adding it to command line takes care of this problem.  
 
-The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transfered back to the DE.  
+The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transferred back to the DE.  
 The HTCondorSubmit.htc file will be in the following form:
 ```
 universe                = docker
@@ -95,7 +95,7 @@ arguments               = <arguments_for_executable>
 transfer_output_files   = <files/folder to transfer separated by commas>
 ```  
 `transfer_output_files` is not needed if the output are in the working directory
-If transfering executables, make sure to restore the right permissions in the script (e.g `chmod u+x <file_name>`).
+If transferring executables, make sure to restore the right permissions in the script (e.g `chmod u+x <file_name>`).
 
 A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.  
 
@@ -107,7 +107,7 @@ can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under
 
 Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
 In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to properly categorize the App.  
-If `details.showArgument` (boolean) is set to `true`, it will pass `details.argument` before the value (e.g. if we want to pass to command line `--kmer 31`). Note that the argument is prepended without spaces (so usually we want to add one in the string)!!  
+If `details.showArgument` (boolean) is set to `true`, it will pass `details.argument` before the value (e.g. if we want to pass to command line `--kmer 31`). Note that the argument is put before the value without spaces (so usually we want to add one in the string)!!  
 `value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`. The same field also allow to accept just even/odd numbers, set a maximum value, etc.  
 We usually don't want the user to work in a folder that is not the set working directory, so if the program run by the App has a `--output_directory` option (or similar) we may want to add a validator to be sure that the string doesn't start with '/', or just hide it and give a default name (e.g. `ouput`).
 
