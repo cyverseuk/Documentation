@@ -19,7 +19,11 @@ The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
 If needed the following instructions may be found:
 `ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly permformed in a second time.   
-`ENV` set environmental variables.  
+`ENV` set environmental variables. Note that it supports a few standard bash modifiers as the following:  
+```bash
+${varibale:-word}
+${variable:+word}
+```  
 `MANTAINER` reports author of the image.  
 `ENTRYPOINT` may provide a default command to run when starting a new container making the docker image an executable.
 
@@ -40,11 +44,11 @@ docker attach <container_name>```
 To make an image publicly available this needs to be uploaded in DockerHub. You will have to create an account and follow the official documentation. To summarize use the following command:  
 ```docker tag <image_ID> <DockerHub_username/image_name[:tag]>```  
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
-For CyverseUK Docker images we are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
-Another useful feature of the automated build is publicing displayed the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it.
+For CyverseUK Docker images we are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated. The organization name is <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a>.  
+Another useful feature of the automated build is publicing displayed the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
 Each image can be provided at build time with a tag (deafult one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
-For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions.
+For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!**
 
 ###More on Docker
 ######_useful commands and tricks_
@@ -73,7 +77,7 @@ Note that it's not possible to register an App if there is already one with the 
 Also, it's not possible (of course) to run an App in Cyverse interactively. To run a Docker container and give it multiple commands we need the following synthax:  
 ```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
 `/bin/bash` is not strictly necessary, but depending on the base image bash may not be the default shell: adding it to command line would remove this problem.  
-The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example).  
+The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transfered back to the DE.  
 The HTCondorSubmit.htc file will be in the following form:
 ```
 universe                = docker
@@ -81,15 +85,20 @@ docker_image            = <image_name>
 executable              = <command>
 should_transfer_files   = YES
 arguments               = <arguments_for_executable>
-transfer_output_files   = <files/folder to transfer>
+transfer_output_files   = <files/folder to transfer separated by commas>
 ```  
 `transfer_output_files` is not needed if the output are in the working directory
 If transfering executables, make sure to restore the right permissions is the script (e.g `chmod u+x <file_name>`).
 
-A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.
+A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.  
+
+The App can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically created based on the submitted JSON file.
 
 #####Additional notes on the JSON file
 
-Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.
+Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
+In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to categorized the App.  
+If `details.showArgument` (boolean) is true it will pass `details.argument` before the `value` (e.g. if we want to pass to command line `--kmer 31`). Note that argument is prepended without spaces!!  
+`value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`.
 
 ###Running an App
