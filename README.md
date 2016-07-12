@@ -63,7 +63,11 @@ To avoid the accumulation of containers is also possible to run docker with the 
 Remove dangling images (i.e. untagged): (to avoid errors due to images being used by containers, remove the containers first)  
 ```docker images -qf dangling=true | xargs docker rmi```   
 Remove dangling images AND the first container that is using them, if any: (may need to be run more than once)  
-```docker images -qf dangling=true | xargs docker rmi 2>&1 | awk '$1=="Error" {print$NF}' | xargs docker rm```
+```docker images -qf dangling=true | xargs docker rmi 2>&1 | awk '$1=="Error" {print$NF}' | xargs docker rm```  
+See the number of layers:  
+```docker history <image_name> | tail -n +2 | wc -l```  
+See the image size:  
+```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```
 
 For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with dieffrent functionalities. Badges were available to clearly displayed the size and the number of layers of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limit factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.
 
@@ -92,13 +96,27 @@ If transfering executables, make sure to restore the right permissions is the sc
 
 A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.  
 
-The App can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically created based on the submitted JSON file.
+The App, after being made public with  
+```apps-pems-update -v -u <username> -p ALL <app_name>-<version>```  
+can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically created based on the submitted JSON file.
 
 #####Additional notes on the JSON file
 
 Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
 In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to categorized the App.  
 If `details.showArgument` (boolean) is true it will pass `details.argument` before the `value` (e.g. if we want to pass to command line `--kmer 31`). Note that argument is prepended without spaces!!  
-`value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`.
+`value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**) Example case: JSON `value.type` doesn't provide a distinction between integers and floating point, but just `number`. To check the input is an integer we may use `"validator": "^\d*$"`.  
+We usually don't want the user to work in a folder that is not the working directory, so if the program run by the App has a `--output_directory` option (or similar) we may want to add a validator to be sure that the string doesn't start with /, or just hide it and give a default name (e.g. `ouput`).
+
+IMPORTANT:  
+```json
+"value": {
+    ...
+    "visible": false,
+    "default": "default_value",
+    ...
+}
+```  
+is NOT supported. The default value must be provided in the wrapper script if we don't want the user to be able to change it.
 
 ###Running an App
