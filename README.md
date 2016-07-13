@@ -71,7 +71,9 @@ See the number of layers:
 See the image size:  
 ```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```
 
-For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.
+For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.  
+
+About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet???), to get the same result we need to use `transfer_input_files` as from next section.
 
 <hr>
 
