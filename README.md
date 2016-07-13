@@ -73,7 +73,7 @@ See the image size:
 
 For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.  
 
-About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet???), to get the same result we need to use `transfer_input_files` as from next section.
+About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.
 
 <hr>
 
