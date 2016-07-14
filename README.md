@@ -69,11 +69,21 @@ Remove dangling images AND the first container that is using them, if any: (may 
 See the number of layers:  
 ```docker history <image_name> | tail -n +2 | wc -l```  
 See the image size:  
-```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```
+```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```  
+
+Other instruction than the ones listed here are available: `EXPOSE`, `VOLUME`, `STOPSIGNAL`, `CMD`, `ONBUILD`, `HEALTHCHECK`. These are usually not required for our purposes, but you can find more informations in the official Docker Documantation.
 
 For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.  
 
-About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.
+About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.  
+
+**IMPORTANT:** You may encounter problems when trying to build a Docker image or connect to internet from inside a container of you are on a local network. From the Docker Documentation:  
+>...all localhost addresses on the host are unreacheable from the container's network.  
+To make it work:
+* find out your DNS address  
+  `nmcli dev list iface em1 | grep IP4.DNS | awk '{print $2}'`  
+* option 1 (easier and preferred): build the image and run the container with `--dns=<you_DNS_adress>`.  
+* option 2: in the `RUN` instruction re-write the `/etc/resolv.conf` file to list your DNS as nameserver.
 
 <hr>
 
