@@ -79,6 +79,7 @@ About the use of Docker universe on HTCondor: the use of volumes (or Data Volume
 
 **IMPORTANT:** You may encounter problems when trying to build a Docker image or connect to internet from inside a container of you are on a local network. From the Docker Documentation:  
 >...all localhost addresses on the host are unreacheable from the container's network.  
+
 To make it work:
 * find out your DNS address  
   `nmcli dev list iface em1 | grep IP4.DNS | awk '{print $2}'`  
