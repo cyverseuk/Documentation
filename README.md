@@ -77,7 +77,7 @@ For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> 
 
 About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.  
 
-**IMPORTANT:** You may encounter problems when trying to build a Docker image or connect to internet from inside a container of you are on a local network. From the Docker Documentation:  
+**IMPORTANT:** You may encounter problems when trying to build a Docker image or connect to internet from inside a container if you are on a local network. From the Docker Documentation:  
 >...all localhost addresses on the host are unreacheable from the container's network.  
 
 To make it work:
