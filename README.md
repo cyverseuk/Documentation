@@ -14,7 +14,7 @@ For CyverseUK Docker images we will start with a Linux distribution (`FROM` comm
 The instruction to build the image are written in a DockerFile.  
 The `LABEL` field provides the image metadata, in CyverseUK software/package`.version`.  
 The `USER` will be `root` by default for CyverseUK Docker images.  
-The `RUN` instruction execute the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ENV DEBIAN_FRONTEND=noninteractive` to disable the prompt.  
+The `RUN` instruction execute the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
 If needed the following instructions may be found:
