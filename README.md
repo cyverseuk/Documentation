@@ -85,6 +85,8 @@ Note that it's not possible to register an App if there is already one with the 
 Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following syntax:  
 ```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
 `/bin/bash` is not strictly necessary, but, depending on the base image, bash may not be the default shell: adding it to command line takes care of this problem.  
+**IMPORTANT UPDATE**: in Docker version 1.12 the `SHELL` instruction was added. This allows the default shell used for the shell form of commands to be overridden (at build time too). Use it as follows:  
+`SHELL ["/bin/bash", "-c"]`
 
 The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a wrapper.sh script (to handle the variables and determine the actual command to be run) and a HTCondorSubmit.htc script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transferred back to the DE.  
 The HTCondorSubmit.htc file will be in the following form:
