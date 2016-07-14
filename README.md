@@ -11,14 +11,14 @@ To create a Docker Image you will need to download and install <a href=https://w
 The suggestion is to follow the tutorial available on the website to get started.
 
 For CyverseUK Docker images we will start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image. For CyverseUK images the convention is to specify the tag of the base image too, to provide the user with a completely standard container.  
-The instruction to build the image are written in a DockerFile.  
+The instructions to build the image are written in a DockerFile.  
 The `LABEL` field provides the image metadata, in CyverseUK software/package`.version`.  
 The `USER` will be `root` by default for CyverseUK Docker images.  
-The `RUN` instruction execute the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
+The `RUN` instruction executes the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation, the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
-If needed the following instructions may be found:
-`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly performed in a second time).   
+If needed the following instructions may be also present:
+`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly performed in a second time). Also may worth to note that the official documentation recommends, when possible, to avoid `ADD` and use `wget` or `curl`.   
 `ENV` set environmental variables. Note that it supports a few standard bash modifiers as the following:  
 ```bash
 ${variable:-word}
@@ -50,7 +50,7 @@ CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/
 Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
 Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
-For CyverseUk images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!** (also note that any change in the linked GitHub repository will trigger a new built, not just a  change in the DockerFile)
+For CyverseUK images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!** (also note that any change in the linked GitHub repository will trigger a new built, not just a  change in the DockerFile)
 
 ###More on Docker
 #####_useful commands and tricks_
@@ -71,14 +71,14 @@ See the number of layers:
 See the image size:  
 ```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```  
 
-Other instruction than the ones listed here are available: `EXPOSE`, `VOLUME`, `STOPSIGNAL`, `CMD`, `ONBUILD`, `HEALTHCHECK`. These are usually not required for our purposes, but you can find more informations in the official Docker Documantation.
+Other instructions than the ones listed here are available: `EXPOSE`, `VOLUME`, `STOPSIGNAL`, `CMD`, `ONBUILD`, `HEALTHCHECK`. These are usually not required for our purposes, but you can find more informations in the official Docker Documentation.
 
 For previous docker versions <a href=https://imagelayers.io/>ImageLayers.io</a> used to provide the user with a number of functionalities. Badges were available to clearly display the number of layers and the size of the image (this can be very useful to know before downloading the image and running a container if time/resources are a limiting factor). We restored only this last feature with a bash script (<a href=https://github.com/aliceminotto/ImageInfo>ImageInfo</a>) that uses <a href=http://shields.io/>shields.io</a>.  
 
 About the use of Docker universe on HTCondor: the use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.  
 
 **IMPORTANT:** You may encounter problems when trying to build a Docker image or connect to internet from inside a container if you are on a local network. From the Docker Documentation:  
->...all localhost addresses on the host are unreacheable from the container's network.  
+>...all localhost addresses on the host are unreachable from the container's network.  
 
 To make it work:
 * find out your DNS address  
