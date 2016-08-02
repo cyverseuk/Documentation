@@ -66,7 +66,7 @@ Remove dangling images (i.e. untagged): (to avoid errors due to images being use
 ```docker images -qf dangling=true | xargs docker rmi```   
 Remove dangling images AND the first container that is using them, if any: (may need to be run more than once)  
 ```docker images -qf dangling=true | xargs docker rmi 2>&1 | awk '$1=="Error" {print$NF}' | xargs docker rm```  
-To avoid running the above command multiple times i wrote <a href=https://raw.githubusercontent.com/aliceminotto/EarlhamInstitute_scripts/master/rmi_docker.sh>this script</a> (should work, no guarantees).
+To avoid running the above command multiple times i wrote <a href=https://raw.githubusercontent.com/aliceminotto/EarlhamInstitute_scripts/master/rmi_docker.sh>this script</a> (should work, no guarantees).   
 See the number of layers:  
 ```docker history <image_name> | tail -n +2 | wc -l```  
 See the image size:  
