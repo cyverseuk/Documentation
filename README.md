@@ -50,7 +50,7 @@ CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/
 Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
 Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
-For CyverseUK images when there is a known change in the image, a new build with the date as tag will be manually triggered to keep track of the different versions. **Remember to save the new tag before triggering and save again `:latest` as default!!** (also note that any change in the linked GitHub repository will trigger a new built, not just a  change in the DockerFile)
+For CyverseUK images when there is a change in the image, a new build with the same tag as the github one will be triggered to keep track of the different versions. Once in a while the ```:latest``` tag will be also updated manually.
 
 ###More on Docker
 #####_useful commands and tricks_
