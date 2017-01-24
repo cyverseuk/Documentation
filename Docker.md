@@ -5,7 +5,10 @@ Index:
 * <a href="#run">Run a Container</a>
 * <a href="#more">More on Docker</a>
 
-###<div id="overview">Very short Docker Overview</div>
+###<div id="overview">Very short Docker Overview</div>  
+
+Docker containers are similar to lightweight virtual machines, but have a different architecture and are organized in layers.  
+For our purposes here we care about them to be lightweight and to provide the user with a virtually isolated environment that includes the application and all its dependencies. Working with Docker containers also enable portability between systems and allow us to provide users with an additional service, in case they don't wish to use Agave applications.  
 
 ###<div id="creating_image">Creating a Docker Image</div>
 
