@@ -5,6 +5,8 @@
 Notes and Documentation created for <a href=http://cyverseuk.org/>CyverseUK</a> at <a href=http://www.earlham.ac.uk/>Earlham Institute</a>.  
 App for CyverseUK are dockerized, allowing the use of a standard environment and version control of packages and softwares used.
 
+###Very short Docker overview
+
 ###Creating a Docker Image
 
 To create a Docker Image you will need to download and install <a href=https://www.docker.com/products/overview>Docker</a> for your distribution.
@@ -12,7 +14,7 @@ The suggestion is to follow the tutorial available on the website to get started
 
 For CyverseUK Docker images we will start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image. For CyverseUK images the convention is to specify the tag of the base image too, to provide the user with a completely standard container.  
 The instructions to build the image are written in a DockerFile.  
-The `LABEL` field provides the image metadata, in CyverseUK software/package`.version`.  
+The `LABEL` field provides the image metadata, in CyverseUK software/package`.version` (note that we are *not* currently respecting the guidelineof prefixing each label key with the reverse DNS notation of the cyverse domain). A list of labels can be retrieved with ```docker inspect <image_name>```.  
 The `USER` will be `root` by default for CyverseUK Docker images.  
 The `RUN` instruction executes the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation, the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
@@ -24,15 +26,38 @@ If needed the following instructions may be also present:
 ${variable:-word}
 ${variable:+word}
 ```  
-`MANTAINER` is the author of the image.  
+`MANTAINER` is the author of the image. Note that in the meanwhile `MAINTAINER` have been deprecated, so from now on it will be listed as a key-value pair in `LABEL`.  
 `ENTRYPOINT` may provide a default command to run when starting a new container making the docker image an executable.
+
+###Build a Docker image
+
+The easier way to build a Docker image once written the Dockerfile is to run the following command:
+```
+docker build -t image_name[:tag] path/to/Dockerfile
+```
+(it's a good idea to have one Dockerfile per folder, hence you can run the previous command in ```.```)
+
+####DockerHub and Automated Build
+
+To make an image publicly available this needs to be uploaded in DockerHub. You have to create an account and follow the official documentation. To summarize use the following command:  
+```
+docker tag <image_ID> <DockerHub_username/image_name[:tag]>
+```  
+`<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
+CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
+Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
+Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
+
+For CyverseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. Once in a while the `:latest` tag will be also updated manually.
 
 ###Run a Container
 
 If running a container locally we often want to run it in interactive mode:  
-```docker run -ti <image_name>```   
+```
+docker run -ti <image_name>
+```   
 If the interactive mode is not needed don't use the `-i` option.  
-In case the image is not available locally, Docker will try to download it from <a href=https://hub.docker.com/>DockerHub</a>.
+In case the image is not available locally, Docker will try to download it from the register <a href=https://hub.docker.com/>DockerHub</a>.
 
 To use data available on our local machine we may need to use a volume. The `-v <source_dir>:<image_dir>` option given by command line will mount `source_dir` in the host to `image_dir` in the docker container. Any change will affect the host directory too.  
 It is possible to stop and keep using the same container in a second time as:  
@@ -41,36 +66,44 @@ docker start <container_name>
 docker attach <container_name>
 ```
 
-###DockerHub and Automated Build
-
-To make an image publicly available this needs to be uploaded in DockerHub. You have to create an account and follow the official documentation. To summarize use the following command:  
-```docker tag <image_ID> <DockerHub_username/image_name[:tag]>```  
-`<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
-CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
-Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
-Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
-
-For CyverseUK images when there is a change in the image, a new build with the same tag as the github one will be triggered to keep track of the different versions. Once in a while the ```:latest``` tag will be also updated manually.
-
 ###More on Docker
 #####_useful commands and tricks_
 
+When writing a Dockerfile it is worth noticing the `source` command is not available as the default interpreter is `/bin/sh` (and not `/bin/bash`). A possible solution is to use the following command:  
+```
+/bin/bash -c "source <whatever_needs_to_be_sourced>"
+```
+
 See all existing containers:  
-```docker ps -a```   
+```
+docker ps -a
+```   
 Remove orphaned volumes from Docker:  
-```sudo docker volume ls -f dangling=true | awk '{print $2}' | tail -n +2 | xargs sudo docker volume rm```  
+```
+sudo docker volume ls -f dangling=true | awk '{print $2}' | tail -n +2 | xargs sudo docker volume rm
+```  
 Remove all containers:  
-```docker ps -a | awk '{print $1}' | tail -n +2 | xargs docker rm```  
+```
+docker ps -a | awk '{print $1}' | tail -n +2 | xargs docker rm
+```  
 To avoid the accumulation of containers is also possible to run docker with the `--rm` option, that remove the container after the execution.  
 Remove dangling images (i.e. untagged): (to avoid errors due to images being used by containers, remove the containers first)  
-```docker images -qf dangling=true | xargs docker rmi```   
+```
+docker images -qf dangling=true | xargs docker rmi
+```   
 Remove dangling images AND the first container that is using them, if any: (may need to be run more than once)  
-```docker images -qf dangling=true | xargs docker rmi 2>&1 | awk '$1=="Error" {print$NF}' | xargs docker rm```  
-To avoid running the above command multiple times i wrote <a href=https://raw.githubusercontent.com/aliceminotto/EarlhamInstitute_scripts/master/rmi_docker.sh>this script</a> (should work, no guarantees).   
+```
+docker images -qf dangling=true | xargs docker rmi 2>&1 | awk '$1=="Error" {print$NF}' | xargs docker rm
+```  
+To avoid running the above command multiple times I wrote <a href=https://raw.githubusercontent.com/aliceminotto/EarlhamInstitute_scripts/master/rmi_docker.sh>this script</a> (should work, no guarantees).   
 See the number of layers:  
-```docker history <image_name> | tail -n +2 | wc -l```  
+```
+docker history <image_name> | tail -n +2 | wc -l
+```  
 See the image size:  
-```docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'```  
+```
+docker images <image_name> | tail -n +2 | awk '{print$(NF-1)" "$NF}'
+```  
 
 Other instructions than the ones listed here are available: `EXPOSE`, `VOLUME`, `STOPSIGNAL`, `CMD`, `ONBUILD`, `HEALTHCHECK`. These are usually not required for our purposes, but you can find more informations in the official Docker Documentation.
 
@@ -95,7 +128,9 @@ To write and register an App I suggest reading <a href=https://github.com/cyvers
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
 
 Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following syntax:  
-```docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".```  
+```
+docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".
+```  
 `/bin/bash` is not strictly necessary, but, depending on the base image, bash may not be the default shell: adding it to command line takes care of this problem.  
 
 **IMPORTANT UPDATE**: in Docker version 1.12 the `SHELL` instruction was added. This allows the default shell used for the shell form of commands to be overridden (at build time too). Use it as follows:  
@@ -120,7 +155,9 @@ If transferring executables, make sure to restore the right permissions in the s
 A good idea is to create, when possible, all the output files in a subdirectory (e.g. `output`) of the working directory, so that the transfer is easier.  
 
 The App, after being made public with  
-```apps-pems-update -v -u <username> -p ALL <app_name>-<version>```  
+```
+apps-pems-update -v -u <username> -p ALL <app_name>-<version>
+```  
 can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically generated based on the submitted JSON file.
 
 #####Additional notes on the JSON file
