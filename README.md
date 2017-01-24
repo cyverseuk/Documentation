@@ -35,7 +35,7 @@ The easier way to build a Docker image once written the Dockerfile is to run the
 ```
 docker build -t image_name[:tag] path/to/Dockerfile
 ```
-(it's a good idea to have one Dockerfile per folder, hence you can run the previous command in ```.```)
+Each image can be provided at build time with a tag (default one is `latest`). (it's a good idea to have one Dockerfile per folder, hence you can run the previous command in ```.```)
 
 ####DockerHub and Automated Build
 
@@ -46,9 +46,8 @@ docker tag <image_ID> <DockerHub_username/image_name[:tag]>
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
 CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
 Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
-Each image can be provided at build time with a tag (default one is `latest`). To do so type `docker build -t image_name[:tag] path/to/Dockerfile`.  
 
-For CyverseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. Once in a while the `:latest` tag will be also updated manually.
+For CyverseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. At the same time also an update of the `:latest` tag is triggered (you need to manually add a rule for this to happen, it's not done automatically).
 
 ###Run a Container
 
