@@ -121,7 +121,7 @@ To make it work:
 
 <hr>
 
-###Registering an App
+##Registering an App
 
 To write and register an App I suggest reading <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
@@ -176,8 +176,12 @@ IMPORTANT:
     ...
 }
 ```  
-is NOT supported. The default value must be provided in the wrapper script if we don't want the user to be able to change it.
+is NOT supported. The default value must be provided in the wrapper script if we don't want the user to be able to change it.  
+
+For the application (if you wish to publish it) to display a proper information window in the Discovery Environment, the following fields need to be present in the JSON file: `help_URI`, `datePublished`, `author`, `longDescription`.
 
 ###Running an App
 
 Again see a full tutorial <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>here</a>.
+
+
