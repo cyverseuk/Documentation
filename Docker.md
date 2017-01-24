@@ -1,6 +1,13 @@
-###Very short Docker overview
+Index:
+* <a href="#overview">Very short Docker Overview</a>
+* <a href="#creating_image">Creating a Docker Image</a>
+* <a href="#build_image">Build a Docker Image</a>
+* <a href="#run">Run a Container</a>
+* <a href="#more">More on Docker</a>
 
-###Creating a Docker Image
+###<div id="overview">Very short Docker Overview</div>
+
+###<div id="creating_image">Creating a Docker Image</div>
 
 To create a Docker Image you will need to download and install <a href=https://www.docker.com/products/overview>Docker</a> for your distribution.
 The suggestion is to follow the tutorial available on the website to get started.
@@ -22,7 +29,7 @@ ${variable:+word}
 `MANTAINER` is the author of the image. Note that in the meanwhile `MAINTAINER` have been deprecated, so from now on it will be listed as a key-value pair in `LABEL`.  
 `ENTRYPOINT` may provide a default command to run when starting a new container making the docker image an executable.
 
-###Build a Docker image
+###<div id="build_image">Build a Docker Image</div>
 
 The easier way to build a Docker image once written the Dockerfile is to run the following command:
 ```
@@ -37,12 +44,15 @@ To make an image publicly available this needs to be uploaded in DockerHub. You 
 docker tag <image_ID> <DockerHub_username/image_name[:tag]>
 ```  
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
-CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization. We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
-Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.
+CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization.  
+![dockerhub view of cyverse organization](https://raw.githubusercontent.com/cyverseuk/Documentation/master/media/dockerhub_view.png)  
+We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
+Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.  
+![view of a dockerfile available publicly on dockerhub](https://github.com/cyverseuk/Documentation/blob/master/media/dockerfile_ex.png?raw=true)  
 
 For CyverseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. At the same time also an update of the `:latest` tag is triggered (you need to manually add a rule for this to happen, it's not done automatically).
 
-###Run a Container
+###<div id="run">Run a Container</div>
 
 If running a container locally we often want to run it in interactive mode:  
 ```
@@ -58,7 +68,7 @@ docker start <container_name>
 docker attach <container_name>
 ```
 
-###More on Docker
+###<div id="more">More on Docker</div>
 #####_useful commands and tricks_
 
 When writing a Dockerfile it is worth noticing the `source` command is not available as the default interpreter is `/bin/sh` (and not `/bin/bash`). A possible solution is to use the following command:  
