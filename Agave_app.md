@@ -1,9 +1,21 @@
-##Registering an App
+Index:
+* <a href="#registering">Registering an App</a>
+    * <a href="#general">Docker integration</a>
+    * <a href="#condor">Condor integration</a>
+* <a href="#json">Additional notes on the JSON file</a>
+* <a href="#running">Running an App</a>
+
+###<dev id="registering">Registering an App</dev>
 
 To write and register an App I suggest reading <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
 
-Also, it's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following syntax:  
+The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transferred back to the DE.  
+In our case there is some adfditional logic in the wrapper script to allow some automation in the virtual machines and the integration with the webapp (<a href="http://cyverseuk.herokuapp.com/">CyverseUk</a>). You don't have to worry about this.  
+
+####<dev id="general">Docker integration</dev>
+
+It's not possible (of course) to run an App in Cyverse interactively. To run multiple commands in a Docker container we need the following syntax in the `wrapper.sh` script:  
 ```
 docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".
 ```  
@@ -12,7 +24,9 @@ docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".
 **IMPORTANT UPDATE**: in Docker version 1.12 the `SHELL` instruction was added. This allows the default shell used for the shell form of commands to be overridden (at build time too). Use it as follows:  
 `SHELL ["/bin/bash", "-c"]`
 
-The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a `wrapper.sh` script (to handle the variables and determine the actual command to be run) and a `HTCondorSubmit.htc` script are needed. The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid it to be transferred back to the DE.  
+####<div id="condor">Condor integration</div>
+
+The HPC is using HTCondor, so the JSON file alone is not enough to run the app: a `wrapper.sh` script (to handle the variables and determine the actual command to be run) and a `HTCondorSubmit.htc` script are needed.  
 The HTCondorSubmit.htc file will be in the following form:
 ```
 universe                = docker
@@ -37,7 +51,7 @@ apps-pems-update -v -u <username> -p ALL <app_name>-<version>
 ```  
 can be found in the <a href=https://de.iplantcollaborative.org/de/>DE</a>, under Apps>High-Performance Computing. The App interface is automatically generated based on the submitted JSON file.
 
-#####Additional notes on the JSON file
+#####<div id="json">Additional notes on the JSON file</div>
 
 Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
 For the application (if you wish to publish it) to display a proper information window in the Discovery Environment, the following fields need to be present in the JSON file: `help_URI`, `datePublished`, `author`, `longDescription`.  
@@ -57,7 +71,7 @@ We usually don't want the user to work in a folder that is not the set working d
 ```  
 is NOT supported. The default value must be provided in the wrapper script if we don't want the user to be able to change it.  
 
-###Running an App
+###<div id="running">Running an App</div>
 
 Again see a full tutorial <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>here</a>.
 
