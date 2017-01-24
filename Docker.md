@@ -126,7 +126,7 @@ To make it work:
 
 <hr/>
 
-<div id="condor">**About the use of Docker universe on HTCondor**</div>  
+**<div id="condor">About the use of Docker universe on HTCondor</div>**  
 The use of volumes (or Data Volumes Containers) is not enabled (yet????) (would require give permissions to specific folders, also is not clear if it mounts volume as only read -ok- or read and write -not so ok-), to get the same result we need to use `transfer_input_files` as from next section.  
 It's also possible that the Docker image has to be updated giving 777 permissions to scripts because of how Condor handle Docker. 
 
