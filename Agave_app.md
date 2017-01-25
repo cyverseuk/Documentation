@@ -1,3 +1,5 @@
+##Register and run apps with Agave API
+
 Index:
 * <a href="#registering">Registering an App</a>
     * <a href="#json">Additional notes on the JSON file</a>
