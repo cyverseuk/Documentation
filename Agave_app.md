@@ -13,8 +13,8 @@ Index:
 To write and register an App I suggest reading <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
 
-The wrapper script has to perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example). It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid them to be archived.  
-In our case there is some additional logic in the wrapper script to allow some automation in the virtual machines and the integration with the webapp (<a href="http://cyverseuk.herokuapp.com/">CyVerseUk</a>). You don't have to worry about this.  
+The wrapper script should perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example), and ideally return the proper error before running the Docker container. It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid them to be archived.  
+In our case there is some additional logic in the wrapper scripts to allow some automatatic tasks in the virtual machines to perform as expected and to integrate the system with the webapp (<a href="http://cyverseuk.herokuapp.com/">CyVerseUk</a>). You don't usually have to worry about this.  
 
 #####<div id="json">Additional notes on the JSON file</div>
 
@@ -22,7 +22,7 @@ Following the introductory part the JSON file lists inputs and parameters. A goo
 For the application (if you wish to publish it) to display a proper information window in the Discovery Environment, the following fields need to be present in the JSON file: `help_URI`, `datePublished`, `author`, `longDescription`.  
 In the `ontology` field a list of IRI for topic and operation branches of the <a href=http://www.ebi.ac.uk/ols/ontologies/edam>EDAM ontology</a> has to be specified to properly categorize the App.  
 
-May you encounter some problems registering your application, I'd suggest first checking the JSON file is valid. A good way is to copy-paste it to <a href="https://togo.agaveapi.co/app/#/apps/new">AgaveToGo</a>.  
+May you encounter some problems registering your application, I'd suggest first checking the JSON file is valid. A good way to do this is to copy-paste it to <a href="https://togo.agaveapi.co/app/#/apps/new">AgaveToGo</a>.  
 
 If `details.showArgument` (boolean) is set to `true`, it will pass `details.argument` before the value (e.g. if we want to pass to command line `--kmer 31`). Note that the argument is put before the value without spaces (so usually we want to add one in the string!!).  
 `value.validator` can supply a check on the format of the submitted value as a <a href=http://perldoc.perl.org/perlre.html>perl formatted regular expression</a>. (**pay particular attention to the escapes**)  
