@@ -1,7 +1,5 @@
 #CyverseUK App Documentation
 
-###**_this page is under construction and is NOT complete_**
-
 Notes and Documentation created for <a href=http://cyverseuk.org/>CyverseUK</a> at <a href=http://www.earlham.ac.uk/>Earlham Institute</a>.  
 App for CyverseUK are dockerized, allowing the use of a standard environment and version control of packages and softwares used.
 
