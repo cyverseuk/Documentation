@@ -18,15 +18,15 @@ For our purposes here we care about them to be lightweight and to provide the us
 To create a Docker Image you will need to download and install <a href=https://www.docker.com/products/overview>Docker</a> for your distribution.
 The suggestion is to follow the tutorial available on the website to get started.
 
-For CyverseUK Docker images we will start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image. For CyverseUK images the convention is to specify the tag of the base image too, to provide the user with a completely standard container.  
-The instructions to build the image are written in a DockerFile.  
-The `LABEL` field provides the image metadata, in CyverseUK software/package`.version` (note that we are *not* currently respecting the guideline of prefixing each label key with the reverse DNS notation of the cyverse domain). A list of labels and additional informations can be retrieved with ```docker inspect <image_name>```.  
-The `USER` will be `root` by default for CyverseUK Docker images.  
-The `RUN` instruction executes the following commands installing the wanted software and all its dependencies. As suggested by the official Docker documentation, the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to keep the number of layers to a minimum. Note that the building process is NOT interactive and the user is not able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
+The instructions to build a Docker image are written in a DockerFile.  
+For CyVerseUK Docker images we start with a Linux distribution (`FROM` command), ideally the suitable one that provides the smallest base image (though considerations about the number of dependencies and their avaibility on different systems may led to the conclusion that is convenient to use one of the ```ubuntu``` distributions). For CyVerseUK images the convention is to specify the tag of the base image too (more about tags below), to provide the user with a completely standarised container.  
+The `LABEL` field provides the image metadata, in CyVerseUK software/package`.version` (note that we are *not* currently respecting the guideline of prefixing each label key with the reverse DNS notation of the CyVerse domain). A list of labels and additional informations can be retrieved with ```docker inspect <image_name>```.  
+The `USER` will be `root` by default for CyVerseUK Docker images.  
+The `RUN` instruction executes the following commands installing the requested software and its dependencies. As suggested by the official Docker documentation, the best practice is to write all the commands in the same `RUN` instruction (this is also true for any other instruction) separated by `&&`, to minimise the number of layers. Note that the building process is NOT interactive and the user will not be able to answer the prompt, so use `-y` or `-yy` to run `apt-get update` and `apt-get install`. It is also possible to set `ARG DEBIAN_FRONTEND=noninteractive` to disable the prompt (`ARG` instruction set a variable _just_ at build time).  
 The `WORKDIR` instruction sets the working directory (`/data/` for my images).
 
 If needed the following instructions may be also present:
-`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyverseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly performed in a second time). Also may worth to note that the official documentation recommends, when possible, to avoid `ADD` and use `wget` or `curl`.   
+`ADD/COPY` to add file/data/software to the image. Ideally the source will be a link or a repository publicly available. The difference between the two instructions is that the former can extract files and open URLs (so in CyVerseUK will be preferred: however `ADD` DO NOT extract from an URL, the extraction will have to be explicitly performed in a second time). Also may worth to note that the official documentation now recommends, when possible, to avoid `ADD` and use `wget` or `curl`.   
 `ENV` set environmental variables. Note that it supports a few standard bash modifiers as the following:  
 ```bash
 ${variable:-word}
@@ -45,18 +45,18 @@ Each image can be provided at build time with a tag (default one is `latest`). (
 
 ####DockerHub and Automated Build
 
-To make an image publicly available this needs to be uploaded in DockerHub. You have to create an account and follow the official documentation. To summarize use the following command:  
+To make an image publicly available this needs to be uploaded in DockerHub. You will have to create an account for yourself/your organization and follow the official documentation. To summarize use the following command:  
 ```
 docker tag <image_ID> <DockerHub_username/image_name[:tag]>
 ```  
 `<image_ID>` can be easily determined with `docker images`. Note that <DockerHub_username/image_name> needs to be manually created in DockerHub prior to the above command to be run.
-CyverseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization.  
+CyVerseUK Docker images can be found under the <a href=https://hub.docker.com/u/cyverseuk/>cyverseuk</a> organization.  
 ![dockerhub view of cyverse organization](https://raw.githubusercontent.com/cyverseuk/Documentation/master/media/dockerhub_view.png)  
 We are using automated build, that allows to trigger a new build every time the linked GitHub repository is updated.  
 Another useful feature of the automated build is to publicly display the DockerFile, allowing the user to know exactly how the image was built and what to expect from a container that is running it. GitHub `README.md` file is made into the Docker image long description.  
 ![view of a dockerfile available publicly on dockerhub](https://github.com/cyverseuk/Documentation/blob/master/media/dockerfile_ex.png?raw=true)  
 
-For CyverseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. At the same time also an update of the `:latest` tag is triggered (you need to manually add a rule for this to happen, it's not done automatically).
+For CyVerseUK images when there is a change in the image, a new build with the same tag as the github release will be triggered to keep track of the different versions. At the same time also an update of the `:latest` tag is triggered (you need to manually add a rule for this to happen, it's not done automatically).
 
 ###<div id="run">Run a Container</div>
 
@@ -65,9 +65,9 @@ If running a container locally we often want to run it in interactive mode:
 docker run -ti <image_name>
 ```   
 If the interactive mode is not needed don't use the `-i` option.  
-In case the image is not available locally, Docker will try to download it from the register <a href=https://hub.docker.com/>DockerHub</a>.
+In case the image is not available locally, Docker will try to download it from the <a href=https://hub.docker.com/>DockerHub</a> register.
 
-To use data available on our local machine we may need to use a volume. The `-v <source_dir>:<image_dir>` option given by command line will mount `source_dir` in the host to `image_dir` in the docker container. Any change will affect the host directory too.  
+To use data available on our local machine we may need to use a volume. The `-v <source_dir>:<image_dir>` option mounts `source_dir` in the host to `image_dir` in the docker container. **Any change will affect the host directory too.**  
 It is possible to stop and keep using the same container in a second time as:  
 ```
 docker start <container_name>
