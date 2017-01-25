@@ -1,3 +1,5 @@
+##Create and run apps in Docker containers
+
 Index:
 * <a href="#overview">Very short Docker Overview</a>
 * <a href="#creating_image">Creating a Docker Image</a>
