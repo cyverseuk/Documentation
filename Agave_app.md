@@ -1,4 +1,4 @@
-##Register and run apps with Agave API
+## Register and run apps with Agave API
 
 Index:
 * <a href="#registering">Registering an App</a>
@@ -8,7 +8,7 @@ Index:
 * <a href="#publishing">Publishing an App</a>
 * <a href="#running">Running an App from command line</a>
 
-###<dev id="registering">Registering an App</dev>
+### <dev id="registering">Registering an App</dev>
 
 To write and register an App I suggest reading <a href=https://github.com/cyverseuk/cyverseuk-util/blob/master/app_tutorial/agaveapps.md>this tutorial</a>.  
 Note that it's not possible to register an App if there is already one with the same name. You can delete the previous one (if there was an error), or change the version number (if you need to make an updated version).  
@@ -16,7 +16,7 @@ Note that it's not possible to register an App if there is already one with the 
 The wrapper script should perform all the checks that the Agave API doesn't support (mutually inclusive or exclusive parameters for example), and ideally return the proper error before running the Docker container. It may be useful to use the wrapper script to delete any new files that is not needed from the working directory, to avoid them to be archived.  
 In our case there is some additional logic in the wrapper scripts to allow some automatatic tasks in the virtual machines to perform as expected and to integrate the system with the webapp (<a href="http://cyverseuk.herokuapp.com/">CyVerseUk</a>). You don't usually have to worry about this.  
 
-#####<div id="json">Additional notes on the JSON file</div>
+##### <div id="json">Additional notes on the JSON file</div>
 
 Following the introductory part the JSON file lists inputs and parameters. A good documentation about the available fields and their usage can be found <a href=http://agaveapi.co/documentation/tutorials/app-management-tutorial/app-inputs-and-parameters-tutorial/>here</a>.  
 For the application (if you wish to publish it) to display a proper information window in the Discovery Environment, the following fields need to be present in the JSON file: `help_URI`, `datePublished`, `author`, `longDescription`.  
@@ -41,7 +41,7 @@ We usually don't want the user to work in a folder that is not the set working d
 ```  
 is NOT supported. The default value must be provided in the wrapper script if we don't want the user to be able to change it.  
 
-####<dev id="general">Docker integration</dev>
+#### <dev id="general">Docker integration</dev>
 
 It's not possible to run an App in CyVerse interactively. Therefore to run multiple commands in a Docker container we need the following syntax in the `wrapper.sh` script:  
 ```
@@ -52,7 +52,7 @@ docker run <image_name[:tag]> /bin/bash -c "command1;command2...;".
 **IMPORTANT UPDATE**: in Docker version 1.12 the `SHELL` instruction was added. This allows the default shell used for the shell form of commands to be overridden (at build time too-so it may make the built a bit slower). Use it as follows:  
 `SHELL ["/bin/bash", "-c"]`
 
-####<div id="condor">Condor integration</div>
+#### <div id="condor">Condor integration</div>
 
 The HPC on CyVerseUk infrastructure is using HTCondor scheduler, so the `wrapper.sh` is not enough to run the app, but a `HTCondorSubmit.htc` script is needed as well.  
 The HTCondorSubmit.htc file will be in the following form:
