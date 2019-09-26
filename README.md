@@ -1,4 +1,4 @@
-![Cyverse logo](https://github.com/cyverseuk/Documentation/blob/master/media/cyverse_rgb.png?raw=true)
+![Cyverse logo](https://github.com/cyverseuk/Documentation/blob/master/media/cyverse_long.png?raw=true)
 
 # CyVerseUK App Documentation
 
